@@ -1,0 +1,22 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "..",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": ["ts-jest", {
+      "allowJs": true
+    }]
+  },
+  "moduleNameMapper": {
+    "^controllers/(.*)$": "<rootDir>/src/controllers/$1",
+    "^core/(.*)$": "<rootDir>/src/core/$1",
+    "^models/(.*)$": "<rootDir>/src/models/$1",
+    "^modules/(.*)$": "<rootDir>/src/modules/$1",
+    "^services/(.*)$": "<rootDir>/src/services/$1",
+    "^repositories/(.*)$": "<rootDir>/src/repositories/$1",
+    "^gateways/(.*)$": "<rootDir>/src/gateways/$1",
+    "^constants/(.*)$": "<rootDir>/src/constants/$1",
+    "^listeners/(.*)$": "<rootDir>/src/listeners/$1"
+  }
+}
