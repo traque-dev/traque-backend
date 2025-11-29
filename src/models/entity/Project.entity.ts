@@ -1,6 +1,7 @@
 import { ExtractEntityProps } from 'core/types/ExtractEntityProps';
+import { generateExternalProjectId } from 'core/utils/generateExternalProjectId';
 
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, BeforeInsert } from 'typeorm';
 
 import { BaseEntity } from 'models/entity/Base.entity';
 import { Organization } from 'models/entity/Organization.entity';
@@ -54,9 +55,24 @@ export class Project extends BaseEntity {
   })
   authorizedUrls?: string[];
 
+  @Column({
+    name: 'external_id',
+    type: 'text',
+    nullable: true,
+    unique: true,
+  })
+  externalId?: string;
+
   constructor(props: ExtractEntityProps<Project>) {
     super();
 
     Object.assign(this, props);
+  }
+
+  @BeforeInsert()
+  setExternalId() {
+    if (!this.externalId) {
+      this.externalId = generateExternalProjectId();
+    }
   }
 }

@@ -69,6 +69,17 @@ pnpm install
 
 The application uses a YAML configuration file located at `resources/application.yaml`.
 
+### Sentry-Compatible SDKs
+
+Traque exposes a Sentry-style ingest API. To forward events from any official Sentry SDK:
+
+1. Copy the project `api_key` and `id`.
+2. Build a DSN that points to your Traque host:  
+   `https://<api_key>@traque.your-domain.com/<project_id>`
+3. Configure the SDK’s transport URL to `https://traque.your-domain.com/api/<project_id>/envelope`.
+
+Only `event` envelope items are persisted today (sessions, transactions, attachments are skipped but still acknowledged). Rotate the `api_key` whenever you need to revoke a DSN.
+
 ### Environment Variables
 
 You can also configure the application using environment variables, which take precedence over the YAML file.

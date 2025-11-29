@@ -29,7 +29,8 @@
       "gateways/*": ["src/gateways/*"],
       "constants/*": ["src/constants/*"],
       "listeners/*": ["src/listeners/*"],
-      "agents/*": ["src/agents/*"]
+      "agents/*": ["src/agents/*"],
+      "queues/*": ["src/queues/*"]
     }
   }
 }

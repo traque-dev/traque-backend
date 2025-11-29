@@ -45,6 +45,7 @@ import { PushNotificationService } from 'services/PushNotification.service';
     PushNotificationService,
     ExceptionStatisticService,
   ],
+  exports: [ExceptionService],
 })
 export class ExceptionModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

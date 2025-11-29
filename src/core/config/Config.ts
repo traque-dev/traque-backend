@@ -10,6 +10,8 @@ import { Mode } from 'core/config/types';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, ValidateNested } from 'class-validator';
 
+import { RedisConfig } from './RedisConfig';
+
 export class Config {
   @IsNotEmpty()
   @ValidateNested()
@@ -45,6 +47,11 @@ export class Config {
   @ValidateNested()
   @Type(() => PolarConfig)
   polar: PolarConfig;
+
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => RedisConfig)
+  redis: RedisConfig;
 
   public get isDevelopment() {
     return this.app.mode === Mode.DEVELOPMENT;

@@ -2,8 +2,10 @@ import { config } from 'core/config';
 import { dataSourceConfig } from 'core/db/config';
 import { getSSLConfig } from 'core/db/utils/getSSLConfig';
 import { BodyParserMiddleware } from 'core/middlewares/BodyParser.middleware';
+import { LoggerMiddleware } from 'core/middlewares/Logger.middleware';
 import { dayjs } from 'core/utils/dayjs';
 
+import { BullModule } from '@nestjs/bullmq';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -14,6 +16,7 @@ import { ApiKeyModule } from 'modules/ApiKey.module';
 import { AuthModule } from 'modules/Auth.module';
 import { AwsIntegrationModule } from 'modules/AwsIntegration.module';
 import { BillingModule } from 'modules/Billing.module';
+import { EnvelopeModule } from 'modules/Envelope.module';
 import { EventModule } from 'modules/Event.module';
 import { ExceptionModule } from 'modules/Exception.module';
 import { IpDetailsModule } from 'modules/IpDetails.module';
@@ -50,6 +53,15 @@ import { WaitlistModule } from 'modules/Waitlist.module';
         limit: 20,
       },
     ]),
+    BullModule.forRoot({
+      connection: {
+        host: config.redis.host,
+        port: config.redis.port,
+        username: config.redis.username,
+        password: config.redis.password,
+        db: config.redis.db,
+      },
+    }),
     AuthModule,
     ExceptionModule,
     UserModule,
@@ -63,12 +75,14 @@ import { WaitlistModule } from 'modules/Waitlist.module';
     EventModule,
     AiModule,
     BillingModule,
+    EnvelopeModule,
   ],
   controllers: [],
   providers: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('/*path');
     consumer.apply(BodyParserMiddleware).forRoutes('/*path');
   }
 }
