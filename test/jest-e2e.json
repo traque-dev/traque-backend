@@ -5,10 +5,21 @@
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": ["ts-jest", {
-      "allowJs": true
+      "allowJs": true,
+      "tsconfig": {
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "isolatedModules": true,
+        "esModuleInterop": true
+      }
     }]
   },
+  "transformIgnorePatterns": [
+    "node_modules/\\.pnpm/(?!(@noble|jose))"
+  ],
   "moduleNameMapper": {
+    "^agents/(.*)$": "<rootDir>/src/agents/$1",
+    "^queues/(.*)$": "<rootDir>/src/queues/$1",
     "^controllers/(.*)$": "<rootDir>/src/controllers/$1",
     "^core/(.*)$": "<rootDir>/src/core/$1",
     "^models/(.*)$": "<rootDir>/src/models/$1",

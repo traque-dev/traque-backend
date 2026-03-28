@@ -16,6 +16,7 @@ import { ApiKeyModule } from 'modules/ApiKey.module';
 import { AuthModule } from 'modules/Auth.module';
 import { AwsIntegrationModule } from 'modules/AwsIntegration.module';
 import { BillingModule } from 'modules/Billing.module';
+import { BugModule } from 'modules/Bug.module';
 import { EnvelopeModule } from 'modules/Envelope.module';
 import { EventModule } from 'modules/Event.module';
 import { ExceptionModule } from 'modules/Exception.module';
@@ -63,6 +64,7 @@ import { WaitlistModule } from 'modules/Waitlist.module';
       },
     }),
     AuthModule,
+    BugModule,
     ExceptionModule,
     UserModule,
     ProjectModule,

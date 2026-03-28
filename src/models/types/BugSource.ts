@@ -1,0 +1,5 @@
+export enum BugSource {
+  SDK = 'SDK',
+  DASHBOARD = 'DASHBOARD',
+  BROWSER_EXTENSION = 'BROWSER_EXTENSION',
+}

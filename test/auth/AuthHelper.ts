@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { App } from 'supertest/types';
 
 export class AuthHelper {
@@ -75,7 +75,7 @@ export class AuthHelper {
    * Makes an authenticated request with Better Auth session cookies
    */
   makeAuthenticatedRequest(
-    method: 'get' | 'post' | 'put' | 'delete',
+    method: 'get' | 'post' | 'put' | 'delete' | 'patch',
     url: string,
     cookies: string[],
   ) {

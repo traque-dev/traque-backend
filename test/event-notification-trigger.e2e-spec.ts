@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import * as request from 'supertest';
+import request from 'supertest';
 import { App } from 'supertest/types';
 import { Repository } from 'typeorm';
 

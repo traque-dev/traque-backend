@@ -5,6 +5,11 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 
 import { Account } from 'models/entity/Account.entity';
 import { ApiKey } from 'models/entity/ApiKey.entity';
+import { Bug } from 'models/entity/Bug.entity';
+import { BugActivity } from 'models/entity/BugActivity.entity';
+import { BugComment } from 'models/entity/BugComment.entity';
+import { BugLabel } from 'models/entity/BugLabel.entity';
+import { BugReproductionStep } from 'models/entity/BugReproductionStep.entity';
 import { Conversation } from 'models/entity/Conversation.entity';
 import { Event } from 'models/entity/Event.entity';
 import { EventNotificationTrigger } from 'models/entity/EventNotificationTrigger.entity';
@@ -68,6 +73,11 @@ export const dataSourceConfig: DataSourceOptions = {
     Event,
     EventNotificationTrigger,
     Conversation,
+    Bug,
+    BugActivity,
+    BugComment,
+    BugLabel,
+    BugReproductionStep,
     // Person,
 
     // integrations
