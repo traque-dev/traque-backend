@@ -95,7 +95,7 @@ export class BugService {
       serverContext: dto.serverContext as Record<string, any>,
       breadcrumbs: dto.breadcrumbs as Record<string, any>[],
       metadata: dto.metadata,
-      source: BugSource.SDK,
+      source: dto.source ?? BugSource.SDK,
     });
 
     bug.project = project;

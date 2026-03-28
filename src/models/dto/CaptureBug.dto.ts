@@ -16,6 +16,7 @@ import { BugBrowserContextDTO } from 'models/dto/BugBrowserContext.dto';
 import { BugServerContextDTO } from 'models/dto/BugServerContext.dto';
 import { CreateBugReproductionStepDTO } from 'models/dto/CreateBugReproductionStep.dto';
 import { BugPriority } from 'models/types/BugPriority';
+import { BugSource } from 'models/types/BugSource';
 
 export class CaptureBugDTO {
   @ApiProperty()
@@ -83,4 +84,9 @@ export class CaptureBugDTO {
   @IsUUID()
   @IsOptional()
   exceptionId?: string;
+
+  @ApiProperty({ required: false })
+  @IsEnum(BugSource)
+  @IsOptional()
+  source?: BugSource;
 }
