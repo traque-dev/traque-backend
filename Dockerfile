@@ -16,9 +16,7 @@ RUN echo ${APPLICATION_YAML} | base64 -d > ./resources/application.yaml
 RUN pnpm run build
 
 FROM node:latest
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-# RUN corepack enable
+RUN npm install -g pnpm
 WORKDIR /app
 
 COPY --from=builder /app/dist /app/dist
