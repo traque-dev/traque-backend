@@ -18,7 +18,7 @@ RUN pnpm run build
 FROM node:latest
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+# RUN corepack enable
 WORKDIR /app
 
 COPY --from=builder /app/dist /app/dist
