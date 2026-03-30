@@ -4,10 +4,13 @@ import { Pageable } from 'core/interfaces/Pageable.interface';
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
-import { paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { paginate } from 'nestjs-typeorm-paginate';
 import { In, Repository } from 'typeorm';
 
+import { PageDTO } from 'models/dto/Page.dto';
+import { IncidentDTO } from 'models/dto/uptime/Incident.dto';
 import { IncidentFilters } from 'models/dto/uptime/IncidentFilters.dto';
+import { IncidentTimelineEntryDTO } from 'models/dto/uptime/IncidentTimelineEntry.dto';
 import { Organization } from 'models/entity/Organization.entity';
 import { Incident } from 'models/entity/uptime/Incident.entity';
 import { IncidentTimelineEntry } from 'models/entity/uptime/IncidentTimelineEntry.entity';
@@ -148,7 +151,7 @@ export class IncidentService {
     organization: Organization,
     pageable: Pageable<Incident>,
     filters: IncidentFilters,
-  ): Promise<Pagination<Incident>> {
+  ): Promise<PageDTO<IncidentDTO>> {
     const where: Record<string, any> = {
       organization: { id: organization.id },
     };
@@ -160,7 +163,7 @@ export class IncidentService {
       where.monitor = { id: filters.monitorId };
     }
 
-    return paginate<Incident>(
+    const page = await paginate<Incident>(
       this.incidentRepository,
       { page: pageable.page, limit: pageable.size },
       {
@@ -169,9 +172,23 @@ export class IncidentService {
         relations: { monitor: true },
       },
     );
+
+    return new PageDTO<IncidentDTO>(
+      page.items.map((i) => this.toIncidentDTO(i)),
+      page.meta,
+    );
   }
 
   async getIncidentById(
+    organization: Organization,
+    incidentId: string,
+  ): Promise<IncidentDTO> {
+    const incident = await this.findIncidentEntity(organization, incidentId);
+
+    return this.toIncidentDTO(incident);
+  }
+
+  async findIncidentEntity(
     organization: Organization,
     incidentId: string,
   ): Promise<Incident> {
@@ -190,8 +207,8 @@ export class IncidentService {
   async getTimeline(
     incidentId: string,
     pageable: Pageable<IncidentTimelineEntry>,
-  ): Promise<Pagination<IncidentTimelineEntry>> {
-    return paginate<IncidentTimelineEntry>(
+  ): Promise<PageDTO<IncidentTimelineEntryDTO>> {
+    const page = await paginate<IncidentTimelineEntry>(
       this.timelineRepository,
       { page: pageable.page, limit: pageable.size },
       {
@@ -199,14 +216,19 @@ export class IncidentService {
         order: pageable.sort ?? { createdAt: 'ASC' },
       },
     );
+
+    return new PageDTO<IncidentTimelineEntryDTO>(
+      page.items.map((e) => new IncidentTimelineEntryDTO(e)),
+      page.meta,
+    );
   }
 
   async acknowledgeIncident(
     organization: Organization,
     incidentId: string,
     user: User,
-  ): Promise<Incident> {
-    const incident = await this.getIncidentById(organization, incidentId);
+  ): Promise<IncidentDTO> {
+    const incident = await this.findIncidentEntity(organization, incidentId);
 
     incident.status = IncidentStatus.ACKNOWLEDGED;
     incident.acknowledgedAt = new Date();
@@ -220,15 +242,15 @@ export class IncidentService {
       metadata: { userId: user.id, userName: user.name },
     });
 
-    return saved;
+    return this.toIncidentDTO(saved);
   }
 
   async resolveIncident(
     organization: Organization,
     incidentId: string,
     user: User,
-  ): Promise<Incident> {
-    const incident = await this.getIncidentById(organization, incidentId);
+  ): Promise<IncidentDTO> {
+    const incident = await this.findIncidentEntity(organization, incidentId);
 
     incident.status = IncidentStatus.RESOLVED;
     incident.resolvedAt = new Date();
@@ -247,7 +269,7 @@ export class IncidentService {
       new IncidentResolvedEvent({ incident: saved }),
     );
 
-    return saved;
+    return this.toIncidentDTO(saved);
   }
 
   async addComment(
@@ -255,13 +277,33 @@ export class IncidentService {
     incidentId: string,
     user: User,
     body: string,
-  ): Promise<IncidentTimelineEntry> {
-    const incident = await this.getIncidentById(organization, incidentId);
+  ): Promise<IncidentTimelineEntryDTO> {
+    const incident = await this.findIncidentEntity(organization, incidentId);
 
-    return this.addTimelineEntry(incident, {
+    const entry = await this.addTimelineEntry(incident, {
       type: IncidentTimelineEntryType.COMMENT,
       message: body,
       metadata: { userId: user.id, userName: user.name },
+    });
+
+    return new IncidentTimelineEntryDTO(entry);
+  }
+
+  private toIncidentDTO(incident: Incident): IncidentDTO {
+    return new IncidentDTO({
+      id: incident.id,
+      createdAt: incident.createdAt,
+      updatedAt: incident.updatedAt,
+      monitorId: incident.monitor?.id,
+      organizationId: incident.organization?.id,
+      status: incident.status,
+      cause: incident.cause,
+      checkedUrl: incident.checkedUrl,
+      startedAt: incident.startedAt,
+      acknowledgedAt: incident.acknowledgedAt,
+      acknowledgedById: incident.acknowledgedBy?.id,
+      resolvedAt: incident.resolvedAt,
+      resolvedAutomatically: incident.resolvedAutomatically,
     });
   }
 

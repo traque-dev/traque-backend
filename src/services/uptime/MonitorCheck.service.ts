@@ -5,33 +5,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Repository } from 'typeorm';
 
+import { PageDTO } from 'models/dto/Page.dto';
+import { AvailabilityPeriodDTO } from 'models/dto/uptime/AvailabilityPeriod.dto';
+import { MonitorCheckDTO } from 'models/dto/uptime/MonitorCheck.dto';
+import { MonitorSummaryDTO } from 'models/dto/uptime/MonitorSummary.dto';
+import { ResponseTimePointDTO } from 'models/dto/uptime/ResponseTimePoint.dto';
 import { MonitorCheck } from 'models/entity/uptime/MonitorCheck.entity';
 import { CheckStatus } from 'models/types/uptime/CheckStatus';
 import { MonitorRegion } from 'models/types/uptime/MonitorRegion';
-
-export interface MonitorSummary {
-  currentlyUpForMs: number | null;
-  lastCheckedAt: Date | null;
-}
-
-export interface ResponseTimePoint {
-  checkedAt: Date;
-  dnsLookupMs: number | null;
-  tcpConnectionMs: number | null;
-  tlsHandshakeMs: number | null;
-  totalResponseMs: number | null;
-}
-
-export interface AvailabilityPeriod {
-  label: string;
-  from: Date;
-  to: Date;
-  availabilityPercent: number;
-  downtimeMs: number;
-  incidentCount: number;
-  longestDowntimeMs: number;
-  averageDowntimeMs: number;
-}
 
 @Injectable()
 export class MonitorCheckService {
@@ -43,8 +24,8 @@ export class MonitorCheckService {
   async getChecks(
     monitorId: string,
     pageable: Pageable<MonitorCheck>,
-  ): Promise<Pagination<MonitorCheck>> {
-    return paginate<MonitorCheck>(
+  ): Promise<PageDTO<MonitorCheckDTO>> {
+    const page = await paginate<MonitorCheck>(
       this.checkRepository,
       {
         page: pageable.page,
@@ -55,16 +36,24 @@ export class MonitorCheckService {
         order: pageable.sort ?? { checkedAt: 'DESC' },
       },
     );
+
+    return new PageDTO<MonitorCheckDTO>(
+      page.items.map((c) => new MonitorCheckDTO(c)),
+      page.meta,
+    );
   }
 
-  async getSummary(monitorId: string): Promise<MonitorSummary> {
+  async getSummary(monitorId: string): Promise<MonitorSummaryDTO> {
     const lastCheck = await this.checkRepository.findOne({
       where: { monitor: { id: monitorId } },
       order: { checkedAt: 'DESC' },
     });
 
     if (!lastCheck) {
-      return { currentlyUpForMs: null, lastCheckedAt: null };
+      return new MonitorSummaryDTO({
+        currentlyUpForMs: null,
+        lastCheckedAt: null,
+      });
     }
 
     const lastDownCheck = await this.checkRepository.findOne({
@@ -92,17 +81,17 @@ export class MonitorCheckService {
         lastCheck.checkedAt.getTime() - lastDownCheck.checkedAt.getTime();
     }
 
-    return {
+    return new MonitorSummaryDTO({
       currentlyUpForMs,
       lastCheckedAt: lastCheck.checkedAt,
-    };
+    });
   }
 
   async getResponseTimes(
     monitorId: string,
     region?: MonitorRegion,
     periodDays = 1,
-  ): Promise<ResponseTimePoint[]> {
+  ): Promise<ResponseTimePointDTO[]> {
     const since = new Date();
     since.setDate(since.getDate() - periodDays);
 
@@ -125,25 +114,28 @@ export class MonitorCheckService {
 
     const checks = await qb.getMany();
 
-    return checks.map((c) => ({
-      checkedAt: c.checkedAt,
-      dnsLookupMs: c.dnsLookupMs ?? null,
-      tcpConnectionMs: c.tcpConnectionMs ?? null,
-      tlsHandshakeMs: c.tlsHandshakeMs ?? null,
-      totalResponseMs: c.totalResponseMs ?? null,
-    }));
+    return checks.map(
+      (c) =>
+        new ResponseTimePointDTO({
+          checkedAt: c.checkedAt,
+          dnsLookupMs: c.dnsLookupMs ?? null,
+          tcpConnectionMs: c.tcpConnectionMs ?? null,
+          tlsHandshakeMs: c.tlsHandshakeMs ?? null,
+          totalResponseMs: c.totalResponseMs ?? null,
+        }),
+    );
   }
 
   async getAvailability(
     monitorId: string,
     from?: Date,
     to?: Date,
-  ): Promise<AvailabilityPeriod[]> {
+  ): Promise<AvailabilityPeriodDTO[]> {
     const now = new Date();
     const resolvedTo = to ?? now;
 
     const periods = this.buildPeriods(resolvedTo, from);
-    const result: AvailabilityPeriod[] = [];
+    const result: AvailabilityPeriodDTO[] = [];
 
     for (const period of periods) {
       const stats = await this.computeAvailabilityForPeriod(
@@ -162,7 +154,7 @@ export class MonitorCheckService {
   private buildPeriods(
     to: Date,
     from?: Date,
-  ): { label: string; from: Date; to: Date }[] {
+  ): Array<{ label: string; from: Date; to: Date }> {
     if (from) {
       return [{ label: 'Custom', from, to }];
     }
@@ -195,7 +187,7 @@ export class MonitorCheckService {
     from: Date,
     to: Date,
     label: string,
-  ): Promise<AvailabilityPeriod> {
+  ): Promise<AvailabilityPeriodDTO> {
     const checks = await this.checkRepository
       .createQueryBuilder('check')
       .select(['check.status', 'check.checkedAt'])
@@ -206,7 +198,7 @@ export class MonitorCheckService {
       .getMany();
 
     if (checks.length === 0) {
-      return {
+      return new AvailabilityPeriodDTO({
         label,
         from,
         to,
@@ -215,7 +207,7 @@ export class MonitorCheckService {
         incidentCount: 0,
         longestDowntimeMs: 0,
         averageDowntimeMs: 0,
-      };
+      });
     }
 
     let totalDowntimeMs = 0;
@@ -273,7 +265,7 @@ export class MonitorCheckService {
           )
         : 0;
 
-    return {
+    return new AvailabilityPeriodDTO({
       label,
       from,
       to,
@@ -282,6 +274,6 @@ export class MonitorCheckService {
       incidentCount,
       longestDowntimeMs: Math.round(longestDowntimeMs),
       averageDowntimeMs,
-    };
+    });
   }
 }

@@ -1,3 +1,4 @@
+import { ApiResponsePage } from 'core/decorators/ApiResponsePage.decorator';
 import { CurrentOrganization } from 'core/decorators/CurrentOrganization.decorator';
 import { OrganizationMemberOnly } from 'core/decorators/OrganizationMemberOnly.decorator';
 import {
@@ -19,11 +20,12 @@ import {
   Query,
   Version,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Pagination } from 'nestjs-typeorm-paginate';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { PageDTO } from 'models/dto/Page.dto';
 import { PositiveResponseDto } from 'models/dto/PositiveResponse.dto';
 import { CreateMonitorDTO } from 'models/dto/uptime/CreateMonitor.dto';
+import { MonitorDTO } from 'models/dto/uptime/Monitor.dto';
 import { MonitorFilters } from 'models/dto/uptime/MonitorFilters.dto';
 import { UpdateMonitorDTO } from 'models/dto/uptime/UpdateMonitor.dto';
 import { Organization } from 'models/entity/Organization.entity';
@@ -36,6 +38,7 @@ export class MonitorController {
   constructor(private readonly monitorService: MonitorService) {}
 
   @ApiOperation({ summary: 'List monitors' })
+  @ApiResponsePage(MonitorDTO)
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -50,11 +53,12 @@ export class MonitorController {
     )
     pageable: Pageable<Monitor>,
     @Query() filters: MonitorFilters,
-  ): Promise<Pagination<Monitor>> {
+  ): Promise<PageDTO<MonitorDTO>> {
     return this.monitorService.getMonitors(organization, pageable, filters);
   }
 
   @ApiOperation({ summary: 'Get monitor by ID' })
+  @ApiResponse({ type: MonitorDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -62,11 +66,12 @@ export class MonitorController {
   getMonitorById(
     @CurrentOrganization() organization: Organization,
     @Param('monitorId', ParseUUIDPipe) monitorId: string,
-  ): Promise<Monitor> {
+  ): Promise<MonitorDTO> {
     return this.monitorService.getMonitorById(organization, monitorId);
   }
 
   @ApiOperation({ summary: 'Create a monitor' })
+  @ApiResponse({ type: MonitorDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -74,11 +79,12 @@ export class MonitorController {
   createMonitor(
     @CurrentOrganization() organization: Organization,
     @Body() dto: CreateMonitorDTO,
-  ): Promise<Monitor> {
+  ): Promise<MonitorDTO> {
     return this.monitorService.createMonitor(organization, dto);
   }
 
   @ApiOperation({ summary: 'Update a monitor' })
+  @ApiResponse({ type: MonitorDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -87,11 +93,12 @@ export class MonitorController {
     @CurrentOrganization() organization: Organization,
     @Param('monitorId', ParseUUIDPipe) monitorId: string,
     @Body() dto: UpdateMonitorDTO,
-  ): Promise<Monitor> {
+  ): Promise<MonitorDTO> {
     return this.monitorService.updateMonitor(organization, monitorId, dto);
   }
 
   @ApiOperation({ summary: 'Delete a monitor' })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -106,6 +113,7 @@ export class MonitorController {
   }
 
   @ApiOperation({ summary: 'Pause a monitor' })
+  @ApiResponse({ type: MonitorDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -113,11 +121,12 @@ export class MonitorController {
   pauseMonitor(
     @CurrentOrganization() organization: Organization,
     @Param('monitorId', ParseUUIDPipe) monitorId: string,
-  ): Promise<Monitor> {
+  ): Promise<MonitorDTO> {
     return this.monitorService.pauseMonitor(organization, monitorId);
   }
 
   @ApiOperation({ summary: 'Resume a monitor' })
+  @ApiResponse({ type: MonitorDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -125,7 +134,7 @@ export class MonitorController {
   resumeMonitor(
     @CurrentOrganization() organization: Organization,
     @Param('monitorId', ParseUUIDPipe) monitorId: string,
-  ): Promise<Monitor> {
+  ): Promise<MonitorDTO> {
     return this.monitorService.resumeMonitor(organization, monitorId);
   }
 }

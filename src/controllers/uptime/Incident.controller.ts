@@ -1,3 +1,4 @@
+import { ApiResponsePage } from 'core/decorators/ApiResponsePage.decorator';
 import { CurrentOrganization } from 'core/decorators/CurrentOrganization.decorator';
 import { OrganizationMemberOnly } from 'core/decorators/OrganizationMemberOnly.decorator';
 import {
@@ -18,10 +19,12 @@ import {
   Query,
   Version,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Pagination } from 'nestjs-typeorm-paginate';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { PageDTO } from 'models/dto/Page.dto';
+import { IncidentDTO } from 'models/dto/uptime/Incident.dto';
 import { IncidentFilters } from 'models/dto/uptime/IncidentFilters.dto';
+import { IncidentTimelineEntryDTO } from 'models/dto/uptime/IncidentTimelineEntry.dto';
 import { Organization } from 'models/entity/Organization.entity';
 import { Incident } from 'models/entity/uptime/Incident.entity';
 import { IncidentTimelineEntry } from 'models/entity/uptime/IncidentTimelineEntry.entity';
@@ -34,6 +37,7 @@ export class IncidentController {
   constructor(private readonly incidentService: IncidentService) {}
 
   @ApiOperation({ summary: 'List incidents' })
+  @ApiResponsePage(IncidentDTO)
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -48,11 +52,12 @@ export class IncidentController {
     )
     pageable: Pageable<Incident>,
     @Query() filters: IncidentFilters,
-  ): Promise<Pagination<Incident>> {
+  ): Promise<PageDTO<IncidentDTO>> {
     return this.incidentService.getIncidents(organization, pageable, filters);
   }
 
   @ApiOperation({ summary: 'Get incident by ID' })
+  @ApiResponse({ type: IncidentDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -60,11 +65,12 @@ export class IncidentController {
   getIncidentById(
     @CurrentOrganization() organization: Organization,
     @Param('incidentId', ParseUUIDPipe) incidentId: string,
-  ): Promise<Incident> {
+  ): Promise<IncidentDTO> {
     return this.incidentService.getIncidentById(organization, incidentId);
   }
 
   @ApiOperation({ summary: 'Get incident timeline' })
+  @ApiResponsePage(IncidentTimelineEntryDTO)
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -79,13 +85,14 @@ export class IncidentController {
       }),
     )
     pageable: Pageable<IncidentTimelineEntry>,
-  ): Promise<Pagination<IncidentTimelineEntry>> {
+  ): Promise<PageDTO<IncidentTimelineEntryDTO>> {
     await this.incidentService.getIncidentById(organization, incidentId);
 
     return this.incidentService.getTimeline(incidentId, pageable);
   }
 
   @ApiOperation({ summary: 'Acknowledge an incident' })
+  @ApiResponse({ type: IncidentDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -94,7 +101,7 @@ export class IncidentController {
     @CurrentOrganization() organization: Organization,
     @Param('incidentId', ParseUUIDPipe) incidentId: string,
     @Principal() user: User,
-  ): Promise<Incident> {
+  ): Promise<IncidentDTO> {
     return this.incidentService.acknowledgeIncident(
       organization,
       incidentId,
@@ -103,6 +110,7 @@ export class IncidentController {
   }
 
   @ApiOperation({ summary: 'Resolve an incident' })
+  @ApiResponse({ type: IncidentDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -111,11 +119,12 @@ export class IncidentController {
     @CurrentOrganization() organization: Organization,
     @Param('incidentId', ParseUUIDPipe) incidentId: string,
     @Principal() user: User,
-  ): Promise<Incident> {
+  ): Promise<IncidentDTO> {
     return this.incidentService.resolveIncident(organization, incidentId, user);
   }
 
   @ApiOperation({ summary: 'Post a comment or post-mortem' })
+  @ApiResponse({ type: IncidentTimelineEntryDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -125,7 +134,7 @@ export class IncidentController {
     @Param('incidentId', ParseUUIDPipe) incidentId: string,
     @Principal() user: User,
     @Body('body') body: string,
-  ): Promise<IncidentTimelineEntry> {
+  ): Promise<IncidentTimelineEntryDTO> {
     return this.incidentService.addComment(
       organization,
       incidentId,

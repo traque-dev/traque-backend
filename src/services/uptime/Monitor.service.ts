@@ -12,7 +12,9 @@ import {
 } from 'queues/uptime/UptimeQueue.constants';
 import { ILike, Repository } from 'typeorm';
 
+import { PageDTO } from 'models/dto/Page.dto';
 import { CreateMonitorDTO } from 'models/dto/uptime/CreateMonitor.dto';
+import { MonitorDTO } from 'models/dto/uptime/Monitor.dto';
 import { MonitorFilters } from 'models/dto/uptime/MonitorFilters.dto';
 import { UpdateMonitorDTO } from 'models/dto/uptime/UpdateMonitor.dto';
 import { Organization } from 'models/entity/Organization.entity';
@@ -39,7 +41,7 @@ export class MonitorService {
     organization: Organization,
     pageable: Pageable<Monitor>,
     filters: MonitorFilters,
-  ): Promise<Pagination<Monitor>> {
+  ): Promise<PageDTO<MonitorDTO>> {
     const where: Record<string, any> = {
       organization: { id: organization.id },
     };
@@ -54,7 +56,7 @@ export class MonitorService {
       where.name = ILike(`%${filters.search}%`);
     }
 
-    return paginate<Monitor>(
+    const page = await paginate<Monitor>(
       this.monitorRepository,
       {
         page: pageable.page,
@@ -65,9 +67,23 @@ export class MonitorService {
         order: pageable.sort,
       },
     );
+
+    return new PageDTO<MonitorDTO>(
+      page.items.map((m) => new MonitorDTO(m)),
+      page.meta,
+    );
   }
 
   async getMonitorById(
+    organization: Organization,
+    monitorId: string,
+  ): Promise<MonitorDTO> {
+    const monitor = await this.findMonitorEntity(organization, monitorId);
+
+    return new MonitorDTO(monitor);
+  }
+
+  async findMonitorEntity(
     organization: Organization,
     monitorId: string,
   ): Promise<Monitor> {
@@ -85,7 +101,7 @@ export class MonitorService {
   async createMonitor(
     organization: Organization,
     dto: CreateMonitorDTO,
-  ): Promise<Monitor> {
+  ): Promise<MonitorDTO> {
     const monitor = new Monitor({
       name: dto.name,
       pronounceableName: dto.pronounceableName,
@@ -136,15 +152,15 @@ export class MonitorService {
 
     this.logger.log(`Created monitor ${saved.id} for org ${organization.id}`);
 
-    return saved;
+    return new MonitorDTO(saved);
   }
 
   async updateMonitor(
     organization: Organization,
     monitorId: string,
     dto: UpdateMonitorDTO,
-  ): Promise<Monitor> {
-    const monitor = await this.getMonitorById(organization, monitorId);
+  ): Promise<MonitorDTO> {
+    const monitor = await this.findMonitorEntity(organization, monitorId);
 
     const intervalChanged =
       dto.checkIntervalSeconds !== undefined &&
@@ -159,14 +175,14 @@ export class MonitorService {
       await this.scheduleCheckJob(saved);
     }
 
-    return saved;
+    return new MonitorDTO(saved);
   }
 
   async deleteMonitor(
     organization: Organization,
     monitorId: string,
   ): Promise<void> {
-    const monitor = await this.getMonitorById(organization, monitorId);
+    const monitor = await this.findMonitorEntity(organization, monitorId);
 
     await this.removeCheckJob(monitor.id);
     await this.monitorRepository.remove(monitor);
@@ -177,8 +193,8 @@ export class MonitorService {
   async pauseMonitor(
     organization: Organization,
     monitorId: string,
-  ): Promise<Monitor> {
-    const monitor = await this.getMonitorById(organization, monitorId);
+  ): Promise<MonitorDTO> {
+    const monitor = await this.findMonitorEntity(organization, monitorId);
 
     monitor.status = MonitorStatus.PAUSED;
     const saved = await this.monitorRepository.save(monitor);
@@ -187,14 +203,14 @@ export class MonitorService {
 
     this.logger.log(`Paused monitor ${monitorId}`);
 
-    return saved;
+    return new MonitorDTO(saved);
   }
 
   async resumeMonitor(
     organization: Organization,
     monitorId: string,
-  ): Promise<Monitor> {
-    const monitor = await this.getMonitorById(organization, monitorId);
+  ): Promise<MonitorDTO> {
+    const monitor = await this.findMonitorEntity(organization, monitorId);
 
     monitor.status = MonitorStatus.PENDING;
     const saved = await this.monitorRepository.save(monitor);
@@ -203,7 +219,7 @@ export class MonitorService {
 
     this.logger.log(`Resumed monitor ${monitorId}`);
 
-    return saved;
+    return new MonitorDTO(saved);
   }
 
   private async scheduleCheckJob(monitor: Monitor): Promise<void> {
