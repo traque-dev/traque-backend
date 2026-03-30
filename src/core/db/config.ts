@@ -29,6 +29,10 @@ import { PushNotificationToken } from 'models/entity/PushNotificationToken.entit
 import { Session } from 'models/entity/Session.entity';
 import { Subscription } from 'models/entity/Subscription.entity';
 import { TwoFactor } from 'models/entity/TwoFactor.entity';
+import { Incident } from 'models/entity/uptime/Incident.entity';
+import { IncidentTimelineEntry } from 'models/entity/uptime/IncidentTimelineEntry.entity';
+import { Monitor } from 'models/entity/uptime/Monitor.entity';
+import { MonitorCheck } from 'models/entity/uptime/MonitorCheck.entity';
 import { User } from 'models/entity/User.entity';
 import { Verification } from 'models/entity/Verification.entity';
 import { WaitlistParticipant } from 'models/entity/WaitlistParticipant.entity';
@@ -79,6 +83,12 @@ export const dataSourceConfig: DataSourceOptions = {
     BugLabel,
     BugReproductionStep,
     // Person,
+
+    // uptime
+    Monitor,
+    MonitorCheck,
+    Incident,
+    IncidentTimelineEntry,
 
     // integrations
     // aws
