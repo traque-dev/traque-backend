@@ -1,3 +1,4 @@
+import { ApiResponsePage } from 'core/decorators/ApiResponsePage.decorator';
 import {
   createPageableParams,
   PageableDefault,
@@ -22,6 +23,7 @@ export class BugActivityController {
   constructor(private readonly activityService: BugActivityService) {}
 
   @ApiOperation({ summary: 'List bug activity log' })
+  @ApiResponsePage(BugActivityDTO)
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()

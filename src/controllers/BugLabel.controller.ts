@@ -13,7 +13,7 @@ import {
   Post,
   Version,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BugLabelDTO } from 'models/dto/BugLabel.dto';
 import { CreateBugLabelDTO } from 'models/dto/CreateBugLabel.dto';
@@ -28,6 +28,7 @@ export class BugLabelController {
   constructor(private readonly labelService: BugLabelService) {}
 
   @ApiOperation({ summary: 'List project bug labels' })
+  @ApiResponse({ type: BugLabelDTO, isArray: true })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -37,6 +38,7 @@ export class BugLabelController {
   }
 
   @ApiOperation({ summary: 'Create a bug label' })
+  @ApiResponse({ type: BugLabelDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -49,6 +51,7 @@ export class BugLabelController {
   }
 
   @ApiOperation({ summary: 'Update a bug label' })
+  @ApiResponse({ type: BugLabelDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -62,6 +65,7 @@ export class BugLabelController {
   }
 
   @ApiOperation({ summary: 'Delete a bug label' })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()

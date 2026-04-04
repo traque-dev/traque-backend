@@ -1,3 +1,4 @@
+import { ApiResponsePage } from 'core/decorators/ApiResponsePage.decorator';
 import { CurrentProject } from 'core/decorators/CurrentProject.decorator';
 import {
   createPageableParams,
@@ -19,7 +20,7 @@ import {
   Post,
   Version,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BugCommentDTO } from 'models/dto/BugComment.dto';
 import { CreateBugCommentDTO } from 'models/dto/CreateBugComment.dto';
@@ -43,6 +44,7 @@ export class BugCommentController {
   ) {}
 
   @ApiOperation({ summary: 'List comments for a bug' })
+  @ApiResponsePage(BugCommentDTO)
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -61,6 +63,7 @@ export class BugCommentController {
   }
 
   @ApiOperation({ summary: 'Add a comment' })
+  @ApiResponse({ type: BugCommentDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -77,6 +80,7 @@ export class BugCommentController {
   }
 
   @ApiOperation({ summary: 'Edit a comment' })
+  @ApiResponse({ type: BugCommentDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -91,6 +95,7 @@ export class BugCommentController {
   }
 
   @ApiOperation({ summary: 'Delete a comment' })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()

@@ -14,7 +14,7 @@ import {
   Put,
   Version,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BugReproductionStepDTO } from 'models/dto/BugReproductionStep.dto';
 import { CreateBugReproductionStepDTO } from 'models/dto/CreateBugReproductionStep.dto';
@@ -36,6 +36,7 @@ export class BugReproductionStepController {
   ) {}
 
   @ApiOperation({ summary: 'List reproduction steps' })
+  @ApiResponse({ type: BugReproductionStepDTO, isArray: true })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -47,6 +48,7 @@ export class BugReproductionStepController {
   }
 
   @ApiOperation({ summary: 'Add a reproduction step' })
+  @ApiResponse({ type: BugReproductionStepDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -62,6 +64,7 @@ export class BugReproductionStepController {
   }
 
   @ApiOperation({ summary: 'Update a reproduction step' })
+  @ApiResponse({ type: BugReproductionStepDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -75,6 +78,7 @@ export class BugReproductionStepController {
   }
 
   @ApiOperation({ summary: 'Bulk reorder reproduction steps' })
+  @ApiResponse({ type: BugReproductionStepDTO, isArray: true })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -87,6 +91,7 @@ export class BugReproductionStepController {
   }
 
   @ApiOperation({ summary: 'Delete a reproduction step' })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()

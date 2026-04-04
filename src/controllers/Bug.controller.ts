@@ -1,3 +1,4 @@
+import { ApiResponsePage } from 'core/decorators/ApiResponsePage.decorator';
 import { CurrentProject } from 'core/decorators/CurrentProject.decorator';
 import {
   createPageableParams,
@@ -22,7 +23,7 @@ import {
   Query,
   Version,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AddBugLabelDTO } from 'models/dto/AddBugLabel.dto';
 import { AssignBugDTO } from 'models/dto/AssignBug.dto';
@@ -47,6 +48,7 @@ export class BugController {
   constructor(private readonly bugService: BugService) {}
 
   @ApiOperation({ summary: 'List bugs' })
+  @ApiResponsePage(BugDTO)
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -86,6 +88,7 @@ export class BugController {
   }
 
   @ApiOperation({ summary: 'Get bug by ID' })
+  @ApiResponse({ type: BugDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -98,6 +101,7 @@ export class BugController {
   }
 
   @ApiOperation({ summary: 'Create a bug' })
+  @ApiResponse({ type: BugDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -113,6 +117,7 @@ export class BugController {
   }
 
   @ApiOperation({ summary: 'Update a bug' })
+  @ApiResponse({ type: BugDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -126,6 +131,7 @@ export class BugController {
   }
 
   @ApiOperation({ summary: 'Change bug status' })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -142,6 +148,7 @@ export class BugController {
   }
 
   @ApiOperation({ summary: 'Change bug priority' })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -158,6 +165,7 @@ export class BugController {
   }
 
   @ApiOperation({ summary: 'Assign or unassign a bug' })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -174,6 +182,7 @@ export class BugController {
   }
 
   @ApiOperation({ summary: 'Add a label to a bug' })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -190,6 +199,7 @@ export class BugController {
   }
 
   @ApiOperation({ summary: 'Remove a label from a bug' })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -206,6 +216,7 @@ export class BugController {
   }
 
   @ApiOperation({ summary: 'Delete a bug' })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
