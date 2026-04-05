@@ -2,6 +2,7 @@ import { NotFoundException } from 'core/exceptions/NotFound.exception';
 import { Pageable } from 'core/interfaces/Pageable.interface';
 
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { paginate } from 'nestjs-typeorm-paginate';
 import { Repository } from 'typeorm';
@@ -17,6 +18,7 @@ import { BugReproductionStep } from 'models/entity/BugReproductionStep.entity';
 import { Exception } from 'models/entity/Exception.entity';
 import { Project } from 'models/entity/Project.entity';
 import { User } from 'models/entity/User.entity';
+import { BugCreatedEvent } from 'models/events/BugCreated.event';
 import { BugFilters } from 'models/filters/Bug.filter';
 import { BugMapper } from 'models/mappers/Bug.mapper';
 import { BugActivityType } from 'models/types/BugActivityType';
@@ -36,6 +38,7 @@ export class BugService {
     private readonly labelRepository: Repository<BugLabel>,
     private readonly bugMapper: BugMapper,
     private readonly activityService: BugActivityService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async createBug(
@@ -79,6 +82,11 @@ export class BugService {
 
     const saved = await this.bugRepository.save(bug);
 
+    this.eventEmitter.emit(
+      BugCreatedEvent.eventName,
+      new BugCreatedEvent({ bug: saved }),
+    );
+
     return this.getBugById(project, saved.id);
   }
 
@@ -120,7 +128,12 @@ export class BugService {
       );
     }
 
-    await this.bugRepository.save(bug);
+    const saved = await this.bugRepository.save(bug);
+
+    this.eventEmitter.emit(
+      BugCreatedEvent.eventName,
+      new BugCreatedEvent({ bug: saved }),
+    );
   }
 
   async paginateBugs(

@@ -14,7 +14,7 @@ type PushNotificationTokenConstructorParams = Omit<
   name: 'push_notification_tokens',
 })
 export class PushNotificationToken extends BaseEntity {
-  @OneToOne(() => Session)
+  @OneToOne(() => Session, { onDelete: 'CASCADE' })
   @JoinColumn({
     name: 'session_id',
   })
