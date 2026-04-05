@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { paginate } from 'nestjs-typeorm-paginate';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { BugDTO } from 'models/dto/Bug.dto';
 import { CaptureBugDTO } from 'models/dto/CaptureBug.dto';
@@ -13,19 +13,23 @@ import { CreateBugDTO } from 'models/dto/CreateBug.dto';
 import { PageDTO } from 'models/dto/Page.dto';
 import { UpdateBugDTO } from 'models/dto/UpdateBug.dto';
 import { Bug } from 'models/entity/Bug.entity';
+import { BugFile } from 'models/entity/BugFile.entity';
 import { BugLabel } from 'models/entity/BugLabel.entity';
 import { BugReproductionStep } from 'models/entity/BugReproductionStep.entity';
 import { Exception } from 'models/entity/Exception.entity';
+import { File } from 'models/entity/File.entity';
 import { Project } from 'models/entity/Project.entity';
 import { User } from 'models/entity/User.entity';
 import { BugCreatedEvent } from 'models/events/BugCreated.event';
 import { BugFilters } from 'models/filters/Bug.filter';
 import { BugMapper } from 'models/mappers/Bug.mapper';
+import { FileMapper } from 'models/mappers/File.mapper';
 import { BugActivityType } from 'models/types/BugActivityType';
 import { BugPriority } from 'models/types/BugPriority';
 import { BugSource } from 'models/types/BugSource';
 import { BugStatus } from 'models/types/BugStatus';
 import { BugActivityService } from 'services/BugActivity.service';
+import { FileService } from 'services/File.service';
 
 @Injectable()
 export class BugService {
@@ -36,7 +40,13 @@ export class BugService {
     private readonly exceptionRepository: Repository<Exception>,
     @InjectRepository(BugLabel)
     private readonly labelRepository: Repository<BugLabel>,
+    @InjectRepository(BugFile)
+    private readonly bugFileRepository: Repository<BugFile>,
+    @InjectRepository(File)
+    private readonly fileRepository: Repository<File>,
     private readonly bugMapper: BugMapper,
+    private readonly fileMapper: FileMapper,
+    private readonly fileService: FileService,
     private readonly activityService: BugActivityService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
@@ -81,6 +91,10 @@ export class BugService {
     }
 
     const saved = await this.bugRepository.save(bug);
+
+    if (dto.fileIds?.length) {
+      await this.attachFilesByIds(saved, dto.fileIds);
+    }
 
     this.eventEmitter.emit(
       BugCreatedEvent.eventName,
@@ -130,9 +144,28 @@ export class BugService {
 
     const saved = await this.bugRepository.save(bug);
 
+    if (dto.fileIds?.length) {
+      await this.attachFilesByIds(saved, dto.fileIds);
+    }
+
     this.eventEmitter.emit(
       BugCreatedEvent.eventName,
       new BugCreatedEvent({ bug: saved }),
+    );
+  }
+
+  private async attachFilesByIds(bug: Bug, fileIds: string[]): Promise<void> {
+    const files = await this.fileRepository.find({
+      where: { id: In(fileIds) },
+    });
+
+    await Promise.all(
+      files.map(async (file) => {
+        const bugFile = this.bugFileRepository.create();
+        bugFile.bug = bug;
+        bugFile.file = file;
+        await this.bugFileRepository.save(bugFile);
+      }),
     );
   }
 
@@ -209,6 +242,7 @@ export class BugService {
         exception: true,
         labels: true,
         steps: true,
+        files: { file: true },
       },
     });
 
@@ -216,7 +250,18 @@ export class BugService {
       throw new NotFoundException({ message: 'Bug not found' });
     }
 
-    return this.bugMapper.toDTO(bug);
+    const dto = this.bugMapper.toDTO(bug);
+
+    if (bug.files?.length) {
+      dto.files = await Promise.all(
+        bug.files.map(async (bf) => {
+          const url = await this.fileService.generatePresignedUrl(bf.file.key);
+          return this.fileMapper.toDTO(bf.file, url);
+        }),
+      );
+    }
+
+    return dto;
   }
 
   async updateBug(

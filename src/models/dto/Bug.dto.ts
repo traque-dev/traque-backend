@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BaseDTO } from 'models/dto/Base.dto';
 import { BugLabelDTO } from 'models/dto/BugLabel.dto';
 import { BugReproductionStepDTO } from 'models/dto/BugReproductionStep.dto';
+import { FileDTO } from 'models/dto/File.dto';
 import { BugPriority } from 'models/types/BugPriority';
 import { BugSource } from 'models/types/BugSource';
 import { BugStatus } from 'models/types/BugStatus';
@@ -66,6 +67,9 @@ export class BugDTO extends BaseDTO {
 
   @ApiProperty({ type: [BugReproductionStepDTO], nullable: true })
   steps?: BugReproductionStepDTO[];
+
+  @ApiProperty({ type: [FileDTO], nullable: true })
+  files?: FileDTO[];
 
   constructor(props: ExtractProps<BugDTO>) {
     super();

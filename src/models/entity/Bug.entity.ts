@@ -13,6 +13,7 @@ import {
 import { BaseEntity } from 'models/entity/Base.entity';
 import { BugActivity } from 'models/entity/BugActivity.entity';
 import { BugComment } from 'models/entity/BugComment.entity';
+import { BugFile } from 'models/entity/BugFile.entity';
 import { BugLabel } from 'models/entity/BugLabel.entity';
 import { BugReproductionStep } from 'models/entity/BugReproductionStep.entity';
 import { Exception } from 'models/entity/Exception.entity';
@@ -32,6 +33,7 @@ type BugConstructorParams = Omit<
   | 'comments'
   | 'activities'
   | 'steps'
+  | 'files'
 >;
 
 @Entity({
@@ -149,6 +151,9 @@ export class Bug extends BaseEntity {
     inverseJoinColumn: { name: 'label_id' },
   })
   labels?: BugLabel[];
+
+  @OneToMany(() => BugFile, (bf) => bf.bug)
+  files?: BugFile[];
 
   @OneToMany(() => BugComment, (comment) => comment.bug)
   comments?: BugComment[];

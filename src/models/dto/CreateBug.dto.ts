@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -53,4 +54,14 @@ export class CreateBugDTO {
   @Type(() => CreateBugReproductionStepDTO)
   @IsOptional()
   steps?: CreateBugReproductionStepDTO[];
+
+  @ApiProperty({
+    type: [String],
+    required: false,
+    description: 'IDs of pre-uploaded files to attach',
+  })
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  fileIds?: string[];
 }

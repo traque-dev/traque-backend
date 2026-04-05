@@ -11,9 +11,11 @@ import { BugListener } from 'listeners/Bug.listener';
 import { Bug } from 'models/entity/Bug.entity';
 import { BugActivity } from 'models/entity/BugActivity.entity';
 import { BugComment } from 'models/entity/BugComment.entity';
+import { BugFile } from 'models/entity/BugFile.entity';
 import { BugLabel } from 'models/entity/BugLabel.entity';
 import { BugReproductionStep } from 'models/entity/BugReproductionStep.entity';
 import { Exception } from 'models/entity/Exception.entity';
+import { File } from 'models/entity/File.entity';
 import { Member } from 'models/entity/Member.entity';
 import { Project } from 'models/entity/Project.entity';
 import { PushNotificationToken } from 'models/entity/PushNotificationToken.entity';
@@ -22,6 +24,7 @@ import { BugActivityMapper } from 'models/mappers/BugActivity.mapper';
 import { BugCommentMapper } from 'models/mappers/BugComment.mapper';
 import { BugLabelMapper } from 'models/mappers/BugLabel.mapper';
 import { BugReproductionStepMapper } from 'models/mappers/BugReproductionStep.mapper';
+import { FileModule } from 'modules/File.module';
 import { OrganizationModule } from 'modules/Organization.module';
 import { ProjectModule } from 'modules/Project.module';
 import { BugService } from 'services/Bug.service';
@@ -43,9 +46,12 @@ import { PushNotificationService } from 'services/PushNotification.service';
       Member,
       Project,
       PushNotificationToken,
+      File,
+      BugFile,
     ]),
     OrganizationModule,
     ProjectModule,
+    FileModule,
   ],
   controllers: [
     BugController,

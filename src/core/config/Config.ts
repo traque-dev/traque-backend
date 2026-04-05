@@ -5,6 +5,7 @@ import { IpInfoConfig } from 'core/config/IpInfoConfig';
 import { OAuthConfig } from 'core/config/OAuthConfig';
 import { PolarConfig } from 'core/config/PolarConfig';
 import { ResendConfig } from 'core/config/ResendConfig';
+import { S3Config } from 'core/config/S3Config';
 import { Mode } from 'core/config/types';
 
 import { Type } from 'class-transformer';
@@ -52,6 +53,11 @@ export class Config {
   @ValidateNested()
   @Type(() => RedisConfig)
   redis: RedisConfig;
+
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => S3Config)
+  s3: S3Config;
 
   public get isDevelopment() {
     return this.app.mode === Mode.DEVELOPMENT;

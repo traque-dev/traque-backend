@@ -20,6 +20,7 @@ import { BugModule } from 'modules/Bug.module';
 import { EnvelopeModule } from 'modules/Envelope.module';
 import { EventModule } from 'modules/Event.module';
 import { ExceptionModule } from 'modules/Exception.module';
+import { FileModule } from 'modules/File.module';
 import { IpDetailsModule } from 'modules/IpDetails.module';
 import { IssueModule } from 'modules/Issue.module';
 import { OrganizationModule } from 'modules/Organization.module';
@@ -68,6 +69,7 @@ import { WaitlistModule } from 'modules/Waitlist.module';
     AuthModule,
     BugModule,
     ExceptionModule,
+    FileModule,
     UserModule,
     ProjectModule,
     OrganizationModule,

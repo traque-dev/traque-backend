@@ -89,4 +89,14 @@ export class CaptureBugDTO {
   @IsEnum(BugSource)
   @IsOptional()
   source?: BugSource;
+
+  @ApiProperty({
+    type: [String],
+    required: false,
+    description: 'IDs of pre-uploaded files to attach',
+  })
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  fileIds?: string[];
 }

@@ -8,6 +8,7 @@ import { ApiKey } from 'models/entity/ApiKey.entity';
 import { Bug } from 'models/entity/Bug.entity';
 import { BugActivity } from 'models/entity/BugActivity.entity';
 import { BugComment } from 'models/entity/BugComment.entity';
+import { BugFile } from 'models/entity/BugFile.entity';
 import { BugLabel } from 'models/entity/BugLabel.entity';
 import { BugReproductionStep } from 'models/entity/BugReproductionStep.entity';
 import { Conversation } from 'models/entity/Conversation.entity';
@@ -15,6 +16,7 @@ import { Event } from 'models/entity/Event.entity';
 import { EventNotificationTrigger } from 'models/entity/EventNotificationTrigger.entity';
 import { Exception } from 'models/entity/Exception.entity';
 import { ExceptionFrame } from 'models/entity/ExceptionFrame.entity';
+import { File } from 'models/entity/File.entity';
 import { HttpContext } from 'models/entity/HttpContext.entity';
 import { AwsWafCredentials } from 'models/entity/integrations/aws/waf/AwsWafCredentials.entity';
 import { Invitation } from 'models/entity/Invitation.entity';
@@ -69,6 +71,8 @@ export const dataSourceConfig: DataSourceOptions = {
     Project,
     Issue,
     Exception,
+    File,
+    BugFile,
     ExceptionFrame,
     PushNotificationToken,
     HttpContext,
