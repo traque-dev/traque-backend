@@ -1,0 +1,6 @@
+export enum FeedbackType {
+  IDEA = 'IDEA',
+  FEATURE_REQUEST = 'FEATURE_REQUEST',
+  IMPROVEMENT = 'IMPROVEMENT',
+  GENERAL = 'GENERAL',
+}
