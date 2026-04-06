@@ -1,0 +1,8 @@
+export enum FeedbackStatus {
+  NEW = 'NEW',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  PLANNED = 'PLANNED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  DECLINED = 'DECLINED',
+}

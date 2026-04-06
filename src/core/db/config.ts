@@ -16,6 +16,10 @@ import { Event } from 'models/entity/Event.entity';
 import { EventNotificationTrigger } from 'models/entity/EventNotificationTrigger.entity';
 import { Exception } from 'models/entity/Exception.entity';
 import { ExceptionFrame } from 'models/entity/ExceptionFrame.entity';
+import { Feedback } from 'models/entity/Feedback.entity';
+import { FeedbackActivity } from 'models/entity/FeedbackActivity.entity';
+import { FeedbackComment } from 'models/entity/FeedbackComment.entity';
+import { FeedbackFile } from 'models/entity/FeedbackFile.entity';
 import { File } from 'models/entity/File.entity';
 import { HttpContext } from 'models/entity/HttpContext.entity';
 import { AwsWafCredentials } from 'models/entity/integrations/aws/waf/AwsWafCredentials.entity';
@@ -87,6 +91,12 @@ export const dataSourceConfig: DataSourceOptions = {
     BugLabel,
     BugReproductionStep,
     // Person,
+
+    // feedback
+    Feedback,
+    FeedbackActivity,
+    FeedbackComment,
+    FeedbackFile,
 
     // uptime
     Monitor,
