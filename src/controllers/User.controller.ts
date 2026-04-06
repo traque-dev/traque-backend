@@ -3,6 +3,7 @@ import { AuthenticationPrincipal } from 'core/decorators/AuthenticationPrincipal
 import { PreAuthorize } from 'core/decorators/PreAuthorize.decorator';
 
 import { Body, Controller, Logger, Post, Version } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
 
 import { PushNotificationTokenDTO } from 'models/dto/PushNotificationToken.dto';
 import { PushNotificationToken } from 'models/entity/PushNotificationToken.entity';
@@ -14,6 +15,7 @@ export class UserController {
 
   constructor(private readonly userService: UserService) {}
 
+  @ApiResponse({ type: PushNotificationToken })
   @Version('1')
   @PreAuthorize()
   @Post('/push-notifications/expo')

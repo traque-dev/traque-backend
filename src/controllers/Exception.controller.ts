@@ -1,3 +1,4 @@
+import { ApiResponsePage } from 'core/decorators/ApiResponsePage.decorator';
 import { CurrentProject } from 'core/decorators/CurrentProject.decorator';
 import {
   createPageableParams,
@@ -17,7 +18,7 @@ import {
   Query,
   Version,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { ExceptionDTO } from 'models/dto/Exception.dto';
 import { IssueDTO } from 'models/dto/Issue.dto';
@@ -39,6 +40,7 @@ export class ExceptionController {
     description:
       'Retrieve paginated list of exceptions for a specific project. Supports filtering by issue ID and pagination.',
   })
+  @ApiResponsePage(ExceptionDTO)
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -71,6 +73,7 @@ export class ExceptionController {
     description:
       'Retrieve a specific exception by its ID within the project scope.',
   })
+  @ApiResponse({ type: ExceptionDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()

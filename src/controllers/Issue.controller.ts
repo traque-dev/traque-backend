@@ -1,3 +1,4 @@
+import { ApiResponsePage } from 'core/decorators/ApiResponsePage.decorator';
 import { CurrentProject } from 'core/decorators/CurrentProject.decorator';
 import {
   createPageableParams,
@@ -19,7 +20,7 @@ import {
   Query,
   Version,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { ChangeIssueSeverityDTO } from 'models/dto/ChangeIssueSeverity.dto';
 import { ChangeIssueStatusDTO } from 'models/dto/ChangeIssueStatus.dto';
@@ -44,6 +45,7 @@ export class IssueController {
     description:
       'Retrieves a paginated list of issues for a specific project. Supports filtering, sorting, and pagination.',
   })
+  @ApiResponsePage(IssueDTO)
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -82,6 +84,7 @@ export class IssueController {
     description:
       'Retrieves detailed information about a specific issue by its ID.',
   })
+  @ApiResponse({ type: IssueDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -103,6 +106,7 @@ export class IssueController {
     description:
       'Updates the status of a specific issue. Valid status values include open, in_progress, resolved, and closed.',
   })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -129,6 +133,7 @@ export class IssueController {
     description:
       'Updates the severity level of a specific issue. Valid severity values include low, medium, high, and critical.',
   })
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()

@@ -12,7 +12,7 @@ import {
   Post,
   Version,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { OrganizationDTO } from 'models/dto/Organization.dto';
 import { ProjectDTO } from 'models/dto/Project.dto';
@@ -30,6 +30,7 @@ export class ProjectController {
     private readonly projectMapper: ProjectMapper,
   ) {}
 
+  @ApiResponse({ type: ProjectDTO, isArray: true })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -43,6 +44,7 @@ export class ProjectController {
     return this.projectService.getUserProjects(user, organizationId);
   }
 
+  @ApiResponse({ type: ProjectDTO })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
@@ -65,6 +67,7 @@ export class ProjectController {
     return this.projectMapper.toDTO(project);
   }
 
+  @ApiResponse({ type: ProjectDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()

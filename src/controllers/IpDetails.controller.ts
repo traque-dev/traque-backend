@@ -3,7 +3,7 @@ import { Principal } from 'core/decorators/Principal.decorator';
 import { ParseIPPipe } from 'core/pipes/ParseIP.pipe';
 
 import { Controller, Get, Logger, Param, Version } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { IpAddressDTO } from 'models/dto/IpAddress.dto';
 import { User } from 'models/entity/User.entity';
@@ -20,6 +20,7 @@ export class IpDetailsController {
     private readonly ipAddressMapper: IpAddressMapper,
   ) {}
 
+  @ApiResponse({ type: IpAddressDTO })
   @Version('1')
   @PreAuthorize()
   @Get('/:ip')
