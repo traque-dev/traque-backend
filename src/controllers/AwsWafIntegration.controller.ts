@@ -13,7 +13,7 @@ import {
   Query,
   Version,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AwsWafCredentialsDTO } from 'models/dto/AwsWafCredentials.dto';
 import { OrganizationDTO } from 'models/dto/Organization.dto';
@@ -30,6 +30,7 @@ export class AwsWafIntegrationController {
 
   constructor(private readonly awsWafService: AwsWafService) {}
 
+  @ApiResponse({ type: AwsWafCredentialsDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -46,6 +47,7 @@ export class AwsWafIntegrationController {
     return this.awsWafService.getCredentials(organizationId);
   }
 
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()
@@ -68,6 +70,7 @@ export class AwsWafIntegrationController {
     return PositiveResponseDto.instance();
   }
 
+  @ApiResponse({ type: PositiveResponseDto })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()

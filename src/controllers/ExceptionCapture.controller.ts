@@ -3,7 +3,7 @@ import { CurrentProject } from 'core/decorators/CurrentProject.decorator';
 import { AllowedCaptureExceptionOriginGuard } from 'core/guards/AllowedCaptureExceptionOrigin.guard';
 
 import { Body, Controller, Post, UseGuards, Version } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { ExceptionDTO } from 'models/dto/Exception.dto';
 import { PositiveResponseDto } from 'models/dto/PositiveResponse.dto';
@@ -15,6 +15,7 @@ import { ExceptionService } from 'services/Exception.service';
 export class ExceptionCaptureController {
   constructor(private readonly exceptionService: ExceptionService) {}
 
+  @ApiResponse({ status: 200, type: PositiveResponseDto })
   @Version('1')
   @UseGuards(AllowedCaptureExceptionOriginGuard)
   @ApiKeyAuth()

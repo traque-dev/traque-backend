@@ -10,7 +10,7 @@ import {
   ParseUUIDPipe,
   Version,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { OrganizationDTO } from 'models/dto/Organization.dto';
 import { User } from 'models/entity/User.entity';
@@ -27,6 +27,7 @@ export class OrganizationController {
     private readonly mapper: OrganizationMapper,
   ) {}
 
+  @ApiResponse({ type: OrganizationDTO, isArray: true })
   @Version('1')
   @PreAuthorize()
   @Get('/')
@@ -36,6 +37,7 @@ export class OrganizationController {
     return this.organizationService.getUserOrganizations(user);
   }
 
+  @ApiResponse({ type: OrganizationDTO })
   @Version('1')
   @PreAuthorize()
   @OrganizationMemberOnly()

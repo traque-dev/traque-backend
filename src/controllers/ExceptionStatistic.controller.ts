@@ -10,7 +10,7 @@ import {
   Query,
   Version,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { DailyExceptionStatisticDto } from 'models/dto/DailyExceptionStatistic.dto';
 import { Project } from 'models/entity/Project.entity';
@@ -34,6 +34,7 @@ export class ExceptionStatisticController {
     description:
       'Returns time series data for number of exceptions per day. Supports optional from/to date filters (ISO strings).',
   })
+  @ApiResponse({ type: DailyExceptionStatisticDto, isArray: true })
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()

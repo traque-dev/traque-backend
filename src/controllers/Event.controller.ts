@@ -1,3 +1,4 @@
+import { ApiResponsePage } from 'core/decorators/ApiResponsePage.decorator';
 import { CurrentProject } from 'core/decorators/CurrentProject.decorator';
 import {
   createPageableParams,
@@ -27,6 +28,7 @@ export class EventController {
     summary: 'Get events',
     description: 'Get all events for a project',
   })
+  @ApiResponsePage(EventDto)
   @Version('1')
   @PreAuthorize()
   @ProjectMemberOnly()
