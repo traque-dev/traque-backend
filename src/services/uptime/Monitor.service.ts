@@ -5,7 +5,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Queue } from 'bullmq';
-import { paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { paginate } from 'nestjs-typeorm-paginate';
 import {
   UPTIME_MONITOR_CHECK_JOB,
   UPTIME_MONITOR_CHECK_QUEUE,
@@ -223,24 +223,18 @@ export class MonitorService {
   }
 
   private async scheduleCheckJob(monitor: Monitor): Promise<void> {
-    await this.checkQueue.add(
-      UPTIME_MONITOR_CHECK_JOB,
-      { monitorId: monitor.id },
+    await this.checkQueue.upsertJobScheduler(
+      `monitor-${monitor.id}`,
+      { every: monitor.checkIntervalSeconds * 1000 },
       {
-        repeat: {
-          every: monitor.checkIntervalSeconds * 1000,
-        },
-        jobId: `monitor-${monitor.id}`,
+        name: UPTIME_MONITOR_CHECK_JOB,
+        data: { monitorId: monitor.id },
+        opts: { removeOnComplete: true, removeOnFail: true },
       },
     );
   }
 
   private async removeCheckJob(monitorId: string): Promise<void> {
-    const repeatableJobs = await this.checkQueue.getRepeatableJobs();
-    const job = repeatableJobs.find((j) => j.id === `monitor-${monitorId}`);
-
-    if (job) {
-      await this.checkQueue.removeRepeatableByKey(job.key);
-    }
+    await this.checkQueue.removeJobScheduler(`monitor-${monitorId}`);
   }
 }
