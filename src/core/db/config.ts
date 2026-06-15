@@ -33,6 +33,8 @@ import { Organization } from 'models/entity/Organization.entity';
 import { Project } from 'models/entity/Project.entity';
 import { PushNotificationToken } from 'models/entity/PushNotificationToken.entity';
 import { Session } from 'models/entity/Session.entity';
+import { ShortLink } from 'models/entity/shortlink/ShortLink.entity';
+import { ShortLinkClick } from 'models/entity/shortlink/ShortLinkClick.entity';
 import { Subscription } from 'models/entity/Subscription.entity';
 import { TwoFactor } from 'models/entity/TwoFactor.entity';
 import { Incident } from 'models/entity/uptime/Incident.entity';
@@ -103,6 +105,10 @@ export const dataSourceConfig: DataSourceOptions = {
     MonitorCheck,
     Incident,
     IncidentTimelineEntry,
+
+    // short links
+    ShortLink,
+    ShortLinkClick,
 
     // integrations
     // aws

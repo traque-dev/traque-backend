@@ -11,6 +11,6 @@ import { IpDetailsService } from 'services/IpDetails.service';
   imports: [TypeOrmModule.forFeature([IpAddress]), HttpModule.register({})],
   controllers: [IpDetailsController],
   providers: [IpDetailsService, IpAddressMapper],
-  exports: [],
+  exports: [IpDetailsService],
 })
 export class IpDetailsModule {}
