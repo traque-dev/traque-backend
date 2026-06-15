@@ -5,6 +5,7 @@ import {
   ConsoleLogger,
   INestApplication,
   Logger,
+  RequestMethod,
   VersioningType,
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -59,7 +60,11 @@ class App {
       });
     }
 
-    this.app.setGlobalPrefix('/api');
+    this.app.setGlobalPrefix('/api', {
+      // Short link redirects are served from the root (e.g. traque.app/:slug)
+      // so they must bypass the `/api` prefix.
+      exclude: [{ path: ':slug', method: RequestMethod.GET }],
+    });
 
     this.app.useGlobalPipes(new ValidationPipe({ transform: true }));
     this.app.enableVersioning({

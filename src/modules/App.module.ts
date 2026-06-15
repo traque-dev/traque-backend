@@ -26,6 +26,7 @@ import { IpDetailsModule } from 'modules/IpDetails.module';
 import { IssueModule } from 'modules/Issue.module';
 import { OrganizationModule } from 'modules/Organization.module';
 import { ProjectModule } from 'modules/Project.module';
+import { ShortLinkModule } from 'modules/ShortLink.module';
 import { UptimeIncidentModule } from 'modules/UptimeIncident.module';
 import { UptimeMonitorModule } from 'modules/UptimeMonitor.module';
 import { UserModule } from 'modules/User.module';
@@ -86,6 +87,7 @@ import { WaitlistModule } from 'modules/Waitlist.module';
     EnvelopeModule,
     UptimeMonitorModule,
     UptimeIncidentModule,
+    ShortLinkModule,
   ],
   controllers: [],
   providers: [],
