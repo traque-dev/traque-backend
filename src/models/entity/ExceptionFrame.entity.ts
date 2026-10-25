@@ -1,6 +1,6 @@
 import { ExtractEntityProps } from 'core/types/ExtractEntityProps';
 
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
 import { BaseEntity } from 'models/entity/Base.entity';
 import { Exception } from 'models/entity/Exception.entity';
@@ -13,6 +13,7 @@ type ExceptionFrameConstructorParams = Omit<
 @Entity({
   name: 'exception_frames',
 })
+@Index('idx_exception_frames_exception_id', ['exception'])
 export class ExceptionFrame extends BaseEntity {
   @ManyToOne(() => Exception, {
     onDelete: 'CASCADE',
