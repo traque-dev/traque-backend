@@ -3,6 +3,7 @@ import { ExtractEntityProps } from 'core/types/ExtractEntityProps';
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -25,6 +26,7 @@ type ExceptionConstructorParams = Omit<
 @Entity({
   name: 'exceptions',
 })
+@Index('idx_exceptions_project_id', ['project'])
 export class Exception extends BaseEntity {
   @ManyToOne(() => Issue)
   @JoinColumn({

@@ -3,6 +3,7 @@ import { ExtractEntityProps } from 'core/types/ExtractEntityProps';
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -39,6 +40,7 @@ type BugConstructorParams = Omit<
 @Entity({
   name: 'bugs',
 })
+@Index('idx_bugs_exception_id', ['exception'])
 export class Bug extends BaseEntity {
   @Column({
     type: 'text',
